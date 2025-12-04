@@ -1,1 +1,6 @@
 /target
+**/*.rs.bk
+.idea/
+*.swp
+*.swo
+.DS_Store

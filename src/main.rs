@@ -1,3 +1,8 @@
+use crate::sim::Simulation;
+
+mod sim;
+
 fn main() {
-    println!("Hello, world!");
+    let mut sim = sim::Simulation::new(64, 32);
+    
 }
