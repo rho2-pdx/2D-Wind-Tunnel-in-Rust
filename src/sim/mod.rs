@@ -43,5 +43,45 @@ pub struct Simulation {
 /// 
 impl Simulation {
 
-
+    pub fn new(width: usize, height: usize) -> Self {
+        let initial_density = 1.0;
+        let initial_velocity_x = 0.0;
+        let initial_velocity_y = 0.0;
+        
+        let cell_equilibrium = lattice::equilibrium_calculator(
+            initial_density,
+            initial_velocity_x,
+            initial_velocity_y,
+        );
+        
+        let size = width * height;
+        let mut f = Vec::with_capacity(size);
+        for _ in 0..size {
+            f.push(cell_equilibrium);
+        }
+        Self {
+            width,
+            height,
+            omega: 1.0,
+            f,
+        }
+    }
+    
+    pub fn step(&mut self) {
+        for cell in &mut self.f {
+            let collided = collision::collide_cell(cell, self.omega);
+            *cell = collided;
+        }
+    }
+    
+    pub fn total_mass(&self) -> f64 {
+        self.f
+            .iter()
+            .map(|cell| cell.iter().sum::<f64>())
+            .sum()
+    }
+    
+    pub fn boundaries(&self) -> (i32, i32) {
+        (self.width as i32, self.height as i32)
+    }
 }

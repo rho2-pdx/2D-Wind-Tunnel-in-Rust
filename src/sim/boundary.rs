@@ -4,7 +4,3 @@
 //! 
 //!
 //!
-
-pub enum BoundaryType {
-    Periodic,
-}
