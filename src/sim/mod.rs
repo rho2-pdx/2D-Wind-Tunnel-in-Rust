@@ -6,6 +6,18 @@
 //! width: how wide the grid is 
 //! height: how tall the grid is
 //! field: placeholder for grid
+//! 
+//! # How does this work?
+//! 
+//! Per cell, we store density, velocity, and a tiny probability distribution
+//! (aka where stuff is moving around it)
+//! That means we have 9 values, f0 -> f8 representing cardinal directions,
+//! and the volume of fluid moving in those directions
+//! Using them, we determine density and velocity
+//! 
+//! Next, we're managing collisions and streaming.
+//! For collisions, we find an equilibrium distribution and "relax" towards it
+//! For streaming, after calculations we move the effects to the surrounding cells
 
 mod lattice;
 mod collision;
@@ -20,40 +32,16 @@ pub struct Simulation {
     f: Vec<[f64; lattice::Q]>,
 }
 
-/// Simulation implementation which manages the context of the simulation
+/// Creates a new `Simulation` instance 
+///
+/// # Fields:
+/// width: how wide the grid is
+/// height: how tall the grid is
+///
+/// # Returns
+/// A new simulation with a density of '1' for each cell of the grid
+/// 
 impl Simulation {
-    /// Creates a new `Simulation` instance 
-    ///
-    /// # Fields:
-    /// width: how wide the grid is
-    /// height: how tall the grid is
-    ///
-    /// # Returns
-    /// A new simulation with a density of '1' for each cell of the grid
- 
-    pub fn new(width: usize, height: usize) -> Self {
-        let n = width * height;
-        Self {
-            width,
-            height,
-            field: vec![1.0; n],
-        }
-    }
 
-    /// Moves forward time one "step" in simulation
-    ///
-    pub fn step(&mut self) {
-        for v in &mut self.field {
-            *v += 0.001;
-        }
-    }
 
-    /// Computes the total mass (sum of all cell values) in the simulation grid
-    ///
-    /// # Returns
-    /// A `f32` representing the sum of all densities in the grid
-    ///
-    pub fn total_mass(&self) -> f32 {
-        self.field.iter().sum()
-    }
 }
