@@ -34,3 +34,9 @@ Starting out with generating an "infinite" lattice
 it just wraps around like that OG mario game with the turtles
 That way i don't have to worry about "clean air" and "dirty air",
 or worry about object interactions with the fluid sim (yet)
+
+## Resources Used ##
+window management + pixel displaying
+https://github.com/parasyte/pixels/blob/21bae15f854186598e21ad508f4068a0ebb26d1c/examples/conway/src/main.rs
+https://github.com/parasyte/pixels/tree/21bae15f854186598e21ad508f4068a0ebb26d1c/examples/invaders
+
