@@ -8,8 +8,9 @@ use winit::{
     event_loop::{ControlFlow, EventLoop},
     window::WindowBuilder,
 };
-const SIM_WIDTH: u32 = 128;
-const SIM_HEIGHT: u32 = 128;
+
+const SIM_WIDTH: u32 = 256;
+const SIM_HEIGHT: u32 = 256;
 const PIXEL_SCALE: u32 = 4; // adjust based on your screen size
 const WINDOW_WIDTH: u32 = SIM_WIDTH * PIXEL_SCALE;
 const WINDOW_HEIGHT: u32 = SIM_HEIGHT * PIXEL_SCALE;
@@ -70,30 +71,52 @@ fn main() {
 }
 
 fn display_sim(sim: &Simulation, frame: &mut [u8], width: usize, height: usize) {
-    let mut min_density = f64::MAX;
-    let mut max_density = f64::MIN;
-    
+    // First pass: compute average density over fluid cells to use as a baseline.
+    let mut sum_density = 0.0;
+    let mut count = 0usize;
+
     for y in 0..height {
         for x in 0..width {
+            if sim.is_solid(x, y) {
+                continue;
+            }
             let d = sim.density_at(x, y);
-            if d < min_density { min_density = d; }
-            if d > max_density { max_density = d; }
+            sum_density += d;
+            count += 1;
         }
     }
-    
-    let range = (max_density - min_density).max(1e-6); // prevent division by zero
-    
+
+    let base_density = if count > 0 {
+        sum_density / (count as f64)
+    } else {
+        1.0
+    };
+
+    // Scale factor controls how visible the "smoke" is.
+    let scale = 800.0;
+
     for y in 0..height {
         for x in 0..width {
-            let density = sim.density_at(x, y);
-            let t = ((density - min_density) / range).clamp(0.0, 1.0);
-            let value = (t * 256.0) as u8;
-            
             let index = (y * width + x) * 4;
+
+            if sim.is_solid(x, y) {
+                // Draw the car/walls as dark gray.
+                frame[index] = 40;
+                frame[index + 1] = 40;
+                frame[index + 2] = 40;
+                frame[index + 3] = 0xFF;
+                continue;
+            }
+
+            let density = sim.density_at(x, y);
+            let excess = (density - base_density).max(0.0);
+            let value = (excess * scale).clamp(0.0, 255.0) as u8;
+
+            // Regions near baseline density stay dark; compression around the car shows as brighter "smoke".
             frame[index] = value;
             frame[index + 1] = value;
-            frame[index + 2] = value;   
-            frame[index + 3] = value;
+            frame[index + 2] = value;
+            frame[index + 3] = 0xFF;
         }
     }
 }
