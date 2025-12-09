@@ -25,6 +25,18 @@ pub const DIRECTIONS: [CardinalDirection; Q] = [
     CardinalDirection::NorthWest,
 ];
 
+pub const OPPOSITE_DIRECTION_INDEX: [usize; Q] = [
+    0, // Rest -> Rest
+    5, // North -> South
+    6, // NorthEast -> SouthWest
+    7, // East -> West
+    8, // SouthEast -> NorthWest
+    1, // South -> North
+    2, // SouthWest -> NorthEast
+    3, // West -> East
+    4, // NorthWest -> SouthEast
+];
+
 pub fn direction_vector(direction: CardinalDirection) -> (i32, i32) {
     match direction {
         CardinalDirection::Rest => (0, 0),

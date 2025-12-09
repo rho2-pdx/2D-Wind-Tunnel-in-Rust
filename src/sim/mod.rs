@@ -29,7 +29,8 @@ pub struct Simulation {
     width: usize,
     height: usize,
     omega: f64,
-    grid: Vec<[f64; lattice::Q]>, 
+    grid: Vec<[f64; lattice::Q]>, // "fluid" cells which have density and direction values
+    solid: Vec<bool>, // walls, the car, etc.
 }
 
 /// Creates a new `Simulation` instance 
@@ -45,7 +46,7 @@ impl Simulation {
 
     pub fn new(width: usize, height: usize) -> Self {
         let initial_density = 1.0;
-        let initial_velocity_x = 0.0;
+        let initial_velocity_x = 0.05;
         let initial_velocity_y = 0.0;
         
         let cell_equilibrium = lattice::equilibrium_calculator(
@@ -59,18 +60,69 @@ impl Simulation {
         for _ in 0..size {
             grid.push(cell_equilibrium);
         }
-        
-        let center_x = width / 2;
-        let center_y = height / 2;
-        let center_index = center_y * width + center_x;
-        for i in 0..lattice::Q {
-            grid[center_index][i] *= 1.1;
+        let mut solid = vec![false; size];
+
+
+        let car_width = width / 5;        // 1/5 of domain width
+        let car_height = height / 6;      // 1/6 of domain height
+        let car_center_x = width / 2;
+        let car_base_y = (height * 2) / 3; // lower third of domain
+
+        let car_min_x = car_center_x.saturating_sub(car_width / 2);
+        let car_max_x = (car_center_x + car_width / 2).min(width - 1);
+        let car_min_y = car_base_y.saturating_sub(car_height);
+        let car_max_y = car_base_y.min(height - 2); 
+
+        for y in car_min_y..=car_max_y {
+            for x in car_min_x..=car_max_x {
+                let idx = y * width + x;
+                solid[idx] = true;
+                // Solid cells do not contain fluid; clear their distributions.
+                grid[idx] = [0.0; lattice::Q];
+            }
         }
+        
         Self {
             width,
             height,
             omega: 1.0,
             grid,
+            solid,
+        }
+    }
+    
+    /// Apply simple inlet (left) and outlet (right) boundary conditions.
+    ///
+    /// Left boundary: impose a fixed density and rightward velocity.
+    /// Right boundary: copy from the neighboring interior column (simple outflow).
+    fn apply_inlet_outlet(&mut self) {
+        let inlet_density = 1.0;
+        let inlet_velocity_x = 0.05;
+        let inlet_velocity_y = 0.0;
+
+        // Left boundary: impose equilibrium with fixed density and velocity.
+        for y in 0..self.height {
+            let idx = self.index_from_xy(0, y);
+            if self.solid[idx] {
+                continue;
+            }
+            self.grid[idx] = lattice::equilibrium_calculator(
+                inlet_density,
+                inlet_velocity_x,
+                inlet_velocity_y,
+            );
+        }
+
+        // Right boundary: simple outflow - copy from neighbor column.
+        if self.width >= 2 {
+            for y in 0..self.height {
+                let idx_out = self.index_from_xy(self.width - 1, y);
+                let idx_in  = self.index_from_xy(self.width - 2, y);
+                if self.solid[idx_out] {
+                    continue;
+                }
+                self.grid[idx_out] = self.grid[idx_in];
+            }
         }
     }
     
@@ -82,7 +134,8 @@ impl Simulation {
             grid_new.push(collided);
         }
         
-        self.grid = streaming::stream_periodic(&grid_new, self.width, self.height);
+        self.grid = streaming::stream_periodic(&grid_new, &self.solid, self.width, self.height);
+        self.apply_inlet_outlet();
     }
     
     pub fn total_mass(&self) -> f64 {
@@ -103,6 +156,11 @@ impl Simulation {
     pub fn density_at(&self, x: usize, y: usize) -> f64 {
         let idx = self.index_from_xy(x, y);
         self.grid[idx].iter().sum()
+    }
+
+    pub fn is_solid(&self, x: usize, y: usize) -> bool {
+        let idx = self.index_from_xy(x, y);
+        self.solid[idx]
     }
 
 }
