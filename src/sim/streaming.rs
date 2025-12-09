@@ -38,8 +38,9 @@ pub fn stream_periodic(
                     continue;
                 }
 
-                // Vertical: still periodic for now.
+                // Vertical: periodic wrap.
                 let ny = (y + dy + h) % h;
+
                 let dst_index = grid_index(nx, ny);
 
                 if solid[dst_index] {
