@@ -75,7 +75,7 @@ pub fn direction_weight(direction: CardinalDirection) -> f64 {
 /// Calculates the density and velocity per cell
 /// # Fields:
 /// f: the cell's vector of density and direction
-/// 
+///
 /// # Returns:
 /// density: the separated updated density of that cell
 /// velocity_x: direction to flow horizontally
@@ -91,8 +91,8 @@ pub fn fluid_calculator(f: &[f64; Q]) -> (f64, f64, f64) {
         density += cell_amount; // tally up for a running total of density
 
         // the direction's density dictates velocity
-        let (dx, dy) = direction_vector(*direction); 
-        velocity_x += cell_amount * dx as f64; 
+        let (dx, dy) = direction_vector(*direction);
+        velocity_x += cell_amount * dx as f64;
         velocity_y += cell_amount * dy as f64;
     }
     // check to avoid dividing by zero
@@ -106,12 +106,12 @@ pub fn fluid_calculator(f: &[f64; Q]) -> (f64, f64, f64) {
 
 /// takes density and velocity, decides where the cell is relaxing towards
 /// this is where the actual LBM equation lives to process velocities of cells
-/// 
+///
 /// # Fields:
 /// density: the separated updated density of that cell
 /// velocity_x: direction to flow horizontally
 /// velocity_y: direction to flow vertically
-/// 
+///
 /// # Returns:
 /// result: the updated cell's data
 pub fn equilibrium_calculator(density: f64, velocity_x: f64, velocity_y: f64) -> [f64; Q] {

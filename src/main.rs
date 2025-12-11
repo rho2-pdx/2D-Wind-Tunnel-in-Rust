@@ -1,6 +1,6 @@
 //! Main function
-//! 
-//! contains 
+//!
+//! contains
 mod sim;
 use sim::Simulation;
 
@@ -124,7 +124,7 @@ fn display_sim(sim: &Simulation, frame: &mut [u8], width: usize, height: usize) 
             let excess = (density - base_density).max(0.0);
             let value = (excess * scale).clamp(0.0, 255.0) as u8;
 
-            // Sets the contrast of the pressure 
+            // Sets the contrast of the pressure
             frame[index] = value;
             frame[index + 1] = value;
             frame[index + 2] = value;

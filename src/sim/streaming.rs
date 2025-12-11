@@ -3,13 +3,13 @@
 use super::lattice;
 
 /// Handles cell movements after collision computation
-/// 
+///
 /// # Fields:
 /// grid_old: the vector of vectors which contains all cell data
 /// solid: a vector of bools that dictates which cells are solids
 /// width: the width of the simulation
 /// height: the height of the simulation
-/// 
+///
 /// # Returns:
 /// grid_new: updated vector of vectors with updated cell data
 pub fn stream_periodic(
@@ -23,7 +23,7 @@ pub fn stream_periodic(
     let h = height as i32;
 
     // this equation allows us to translate between a 1D vector representation of the 2D grid
-    let grid_index = |x: i32, y: i32| -> usize {(y as usize) * width + (x as usize)};
+    let grid_index = |x: i32, y: i32| -> usize { (y as usize) * width + (x as usize) };
 
     for y in 0..h {
         for x in 0..w {

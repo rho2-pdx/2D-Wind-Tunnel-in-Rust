@@ -28,7 +28,7 @@ pub struct Simulation {
     height: usize,
     omega: f64, // BGK relaxation rate which controls how quickly equilibrium affects it
     grid: Vec<[f64; lattice::Q]>, // "fluid" cells which have density and direction values
-    solid: Vec<bool>,             // walls, the car, etc.
+    solid: Vec<bool>, // walls, the car, etc.
 }
 
 /// Creates a new `Simulation` instance
@@ -74,7 +74,7 @@ impl Simulation {
                 // sets the "car" cells as solid
                 if car_shape_normalized(nx, ny) {
                     solid[idx] = true;
-                    
+
                     grid[idx] = [0.0; lattice::Q];
                 }
             }
@@ -98,10 +98,10 @@ impl Simulation {
         let inlet_velocity_x = 0.1;
         let inlet_velocity_y = 0.0;
 
-        // Left boundary: determines equilibrium 
+        // Left boundary: determines equilibrium
         for y in 0..self.height {
             let idx = self.index_from_xy(0, y); // only affects the leftmost cells
-            if self.solid[idx] { 
+            if self.solid[idx] {
                 continue;
             }
             self.grid[idx] =
@@ -154,7 +154,6 @@ impl Simulation {
     }
 }
 
-
 /// this was a pain in the ass
 fn car_shape_normalized(nx: f64, ny: f64) -> bool {
     // Rectangle aka the "body" of the car
@@ -177,6 +176,6 @@ fn car_shape_normalized(nx: f64, ny: f64) -> bool {
     // uses the x and y restrictions of if it's within the "car"
     let in_roof = in_roof_circle && ny <= roof_center_y;
 
-    // returns true if it's "in the car" so it can be marked solid 
+    // returns true if it's "in the car" so it can be marked solid
     in_body || in_roof
 }
