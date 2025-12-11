@@ -4,7 +4,10 @@
 //! based upon this
 use super::lattice;
 
-pub fn collide_cell(f_old: &[f64; lattice::Q], omega: f64,) -> [f64; lattice::Q] {
+/// Takes in the cell data and omega (which controls the equilibrium draw)
+/// outputs new cell data
+/// Uses the fluid calculator and equilibrium calculator, and is used in Simulation::step
+pub fn collide_cell(f_old: &[f64; lattice::Q], omega: f64) -> [f64; lattice::Q] {
     let (density, velocity_x, velocity_y) = lattice::fluid_calculator(f_old);
     let equilibrium = lattice::equilibrium_calculator(density, velocity_x, velocity_y);
 
