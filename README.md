@@ -20,23 +20,18 @@ It is an instrumental simulation as it evolves over time and displays state via 
 - cargo run
 - cargo test (to run tests)
 
-## Progress ## 
-
-Did some brainstorming with chatgpt on how to approach
-Mainly just asking how to simulate fluid dynamics because i have no idea
-
-Came up with:
-
-LBM D2Q9 grid representation for the simulation math + data
-Pixels for window and visualization
-
-Starting out with generating an "infinite" lattice
-it just wraps around like that OG mario game with the turtles
-That way i don't have to worry about "clean air" and "dirty air",
-or worry about object interactions with the fluid sim (yet)
+## Lessons ##
+Don't do a coding project on a topic that you don't understand at all
+Especially when it's an advanced physics problem
 
 ## Resources Used ##
 window management + pixel displaying
 https://github.com/parasyte/pixels/blob/21bae15f854186598e21ad508f4068a0ebb26d1c/examples/conway/src/main.rs
 https://github.com/parasyte/pixels/tree/21bae15f854186598e21ad508f4068a0ebb26d1c/examples/invaders
-
+https://www.youtube.com/watch?v=alhpH6ECFvQ
+https://github.com/CodingTrain/Suggestion-Box/issues/178
+https://physics.weber.edu/schroeder/fluids/
+https://www.reddit.com/r/CFD/comments/1gfnkg3/rust_lbm_solver_on_the_gpu/
+https://www.oatext.com/lattice-boltzmann-modeling-for-mass-and-velocity-fields-of-casting-flows.php
+https://journals.aps.org/pr/abstract/10.1103/PhysRev.94.511
+https://github.com/emoon/rust_minifb
